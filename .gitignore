@@ -1,0 +1,7 @@
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+.DS_Store
+supabase/.temp/
