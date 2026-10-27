@@ -44,24 +44,24 @@ existing `/api/*` calls into Supabase calls.
   `bootstrap.sh`), use the secret key. These are opaque strings, not JWTs —
   `createClient(url, key)` treats them identically to the old keys, no code
   changes needed.
-- **Deployment**: Vercel, static build, deployed by manually uploading the
-  built folder (no Git integration / no Vercel "Root Directory" setting
-  exists for this project). `vercel.json` sets build command `npm run build`,
-  output `dist/public`, SPA rewrites. Env vars (`VITE_SUPABASE_URL`,
-  `VITE_SUPABASE_ANON_KEY`, `VITE_AUTH_EMAIL_DOMAIN`) are set in Vercel
-  project settings, mirrored in `vercel-project/.env.example`.
+- **Deployment**: Vercel, static build, Git-connected to
+  `github.com/keshavchaudhary0403-lgtm/hooliv-dues-manager` (public repo,
+  connected 2026-10-27). Every push to `main` auto-deploys to
+  https://hooliv-dues-manager.vercel.app. `vercel.json` sets build command
+  `npm run build`, output `dist/public`, SPA rewrites. Env vars
+  (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_AUTH_EMAIL_DOMAIN`)
+  are set in Vercel project settings, mirrored in
+  `vercel-project/.env.example`; `client/.env` is gitignored, so the build
+  gets them only from Vercel.
 
-  **Deploy gotcha**: always upload/deploy the `vercel-project/` folder
-  itself (the one containing `package.json` and `vercel.json`) — never the
-  outer `hooliv-dues-manager/` repo folder. Uploading the wrong folder
-  produces a blank white page in production (Vercel can't find
-  `package.json`, or the build silently uses wrong settings) and there is no
-  "Root Directory" project setting to fix it after the fact for a
-  non-Git-connected project. The Vercel project's Framework Preset should be
-  set to **Vite** (Settings → General → Build & Development Settings) to
-  avoid a misleading "framework mismatch" warning on upload — though
-  `vercel.json`'s explicit `buildCommand`/`outputDirectory` take precedence
-  over the preset regardless.
+  **Deploy gotcha**: the Vercel project's **Root Directory** must be
+  `vercel-project` (the folder containing `package.json` and `vercel.json`),
+  not the repo root. Building from the repo root produces a blank white page
+  in production. Framework Preset should be **Vite** — though `vercel.json`'s
+  explicit `buildCommand`/`outputDirectory` take precedence regardless.
+
+  **Public repo**: never commit `.env` files, secret keys, or
+  `supabase/.temp/` (Supabase CLI state incl. DB pooler host; gitignored).
 
 Preserve this architecture: React + Vite frontend, Supabase backend, RPC
 functions, Supabase Auth, Edge Functions, Vercel deployment. Do not introduce
